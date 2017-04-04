@@ -68,6 +68,16 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource, NSFe
         return 150
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if let objs = controller.fetchedObjects , objs.count > 0 {
+            
+            let item = objs[indexPath.row]
+            performSegue(withIdentifier: "ItemDetailsVC", sender: item)
+            
+        }
+    }
+    
     
     func attemptFetch() {
         let fetchRequest: NSFetchRequest<Item> = Item.fetchRequest()
@@ -76,6 +86,8 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource, NSFe
         fetchRequest.sortDescriptors = [dateSort];
         
         let controller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+        
+        controller.delegate = self;
         
         self.controller = controller
         
@@ -155,6 +167,16 @@ class MainVC: UIViewController, UITableViewDelegate, UITableViewDataSource, NSFe
         ad.saveContext()
     }
     
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ItemDetailsVC" {
+            if let destination = segue.destination as? ItemDetailVC {
+                if let item = sender as? Item {
+                    destination.itemToEdit = item
+                }                
+            }
+        }
+    }
     
     
     
